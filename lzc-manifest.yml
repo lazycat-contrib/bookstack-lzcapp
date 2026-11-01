@@ -6,7 +6,6 @@ application:
       backend: file:///lzcapp/pkg/content/licenses/
     - location: /
       backend: http://bookstack:80/
-
 services:
   db:
     image: docker.1ms.run/library/mariadb:10.11
@@ -26,10 +25,9 @@ services:
       start_period: 30s
     binds:
       - /lzcapp/var/db:/var/lib/mysql
-
   bookstack:
-    # upstream: linuxserver/bookstack:26.09.2
-    image: docker.1ms.run/linuxserver/bookstack:26.09.2
+    # upstream: linuxserver/bookstack:25.12.20251224
+    image: docker.1ms.run/linuxserver/bookstack:25.12.20251224
     depends_on:
       - db
     environment:
@@ -53,7 +51,6 @@ services:
     binds:
       - /lzcapp/var/config:/config
       - /lzcapp/var/init/create-admin.sh:/custom-cont-init.d/create-admin.sh:ro
-
 usage: |
   BookStack 是文档知识库：用书架、书籍、章节、页面四层结构整理资料，自带权限和全文检索。
 
