@@ -21,7 +21,9 @@ images:
     source: linuxserver/bookstack
     channel: stable
     sort: semver
-    tag_regex: ^\d{2}\.\d{2}\.\d+$
+    # match only semver-like tags (third segment 1-2 digits); date snapshots
+    # such as 26.09.20260929 are excluded because their third segment is 8 digits
+    tag_regex: ^[0-9]{2}[.][0-9]{2}[.][0-9]{1,2}$
     delivery:
       mode: mirror
       require_digest_match: true
