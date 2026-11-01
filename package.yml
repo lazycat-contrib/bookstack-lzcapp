@@ -1,0 +1,18 @@
+package: community.lazycat.app.bookstack
+name: BookStack
+version: 0.0.0
+description: "Wiki-style documentation platform with books, chapters and pages."
+min_os_version: "1.5.0"
+homepage: https://github.com/BookStackApp/BookStack
+author: BookStackApp
+license: MIT
+permissions:
+  required:
+    - net.internet
+locales:
+  zh:
+    name: BookStack
+    description: "文档知识库：用书架、书籍、章节、页面四层结构整理资料，自带权限与全文检索，适合写手册和内部 Wiki。"
+  en:
+    name: BookStack
+    description: "Wiki-style documentation platform with books, chapters and pages."

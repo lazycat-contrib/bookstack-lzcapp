@@ -1,0 +1,21 @@
+params:
+  - id: admin_email
+    type: string
+    name: Admin email
+    description: "Email address for the initial BookStack administrator. Also the login identity."
+    default_value: "admin@example.com"
+    optional: false
+  - id: admin_password
+    type: secret
+    name: Admin password
+    description: "Password for the initial administrator, at least 12 characters. Applied only when the user table is empty."
+    default_value: "$random(len=20)"
+    optional: false
+locales:
+  zh:
+    admin_email:
+      name: 管理员邮箱
+      description: 初始管理员的邮箱，同时也是登录账号。
+    admin_password:
+      name: 管理员密码
+      description: 初始管理员密码，至少 12 位。仅在用户表为空时写入，之后重启不会覆盖。

@@ -1,0 +1,75 @@
+application:
+  subdomain: bookstack
+  multi_instance: false
+  upstreams:
+    - location: /package-licenses/
+      backend: file:///lzcapp/pkg/content/licenses/
+    - location: /
+      backend: http://bookstack:80/
+
+services:
+  db:
+    image: docker.1ms.run/library/mariadb:10.11
+    environment:
+      - MARIADB_ROOT_PASSWORD={{ stable_secret "bookstack_db_root" | replace "\r" "" | replace "\n" "" }}
+      - MARIADB_DATABASE=bookstack
+      - MARIADB_USER=bookstack
+      - |-
+        MARIADB_PASSWORD={{ stable_secret "bookstack_db_password" | replace "\r" "" | replace "\n" "" }}
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - mariadb-admin ping -h 127.0.0.1 -u root -p"$$MARIADB_ROOT_PASSWORD"
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    binds:
+      - /lzcapp/var/db:/var/lib/mysql
+
+  bookstack:
+    # upstream: linuxserver/bookstack:26.09.2
+    image: docker.1ms.run/linuxserver/bookstack:26.09.2
+    depends_on:
+      - db
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Asia/Shanghai
+      - |-
+        APP_URL=https://{{ .S.AppDomain }}
+      - |-
+        APP_KEY=base64:{{ stable_secret "bookstack_app_key" | replace "\r" "" | replace "\n" "" }}
+      - DB_HOST=db
+      - DB_PORT=3306
+      - DB_DATABASE=bookstack
+      - DB_USERNAME=bookstack
+      - |-
+        DB_PASSWORD={{ stable_secret "bookstack_db_password" | replace "\r" "" | replace "\n" "" }}
+      - |-
+        BOOKSTACK_ADMIN_EMAIL={{ .U.admin_email }}
+      - |-
+        BOOKSTACK_ADMIN_PASSWORD={{ .U.admin_password }}
+    binds:
+      - /lzcapp/var/config:/config
+      - /lzcapp/var/init/create-admin.sh:/custom-cont-init.d/create-admin.sh:ro
+
+usage: |
+  BookStack 是文档知识库：用书架、书籍、章节、页面四层结构整理资料，自带权限和全文检索。
+
+  使用方法：
+  1. 打开应用，用安装时填写的管理员邮箱和你设置的密码登录。
+  2. 新建书架（shelf），书架里放书（book），书里写章节和页面。
+  3. 在设置里可以建角色、分配权限，邀请其他人协作。
+
+  数据与安全：
+  - 数据库在 MariaDB（/lzcapp/var/db），附件、图片和主题在 /lzcapp/var/config。卸载应用会一并删除，请定期备份。
+  - 数据库密码与应用密钥由平台稳定密钥生成，每个部署不同，不写成固定值。
+  - 管理员账号在首次启动、用户表为空时自动创建，邮箱和密码来自你在安装时填写的部署参数，不存在内置弱口令。
+  - 之后重启不会覆盖你修改过的密码。
+  - 应用经懒猫入口鉴权访问。
+
+  说明：
+  - 本应用包含两个容器（应用本体 + MariaDB），启动顺序由依赖关系保证。
+  - 未配置邮件服务，邀请成员、找回密码等依赖邮件的功能不可用。
+  - 未做真机验证：登录、建书架与页面、权限设置以及重启后持久化均未在设备上实测。
