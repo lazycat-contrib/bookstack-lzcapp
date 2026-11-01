@@ -26,8 +26,8 @@ services:
     binds:
       - /lzcapp/var/db:/var/lib/mysql
   bookstack:
-    # upstream: linuxserver/bookstack:25.12.20251224
-    image: docker.1ms.run/linuxserver/bookstack:25.12.20251224
+    # upstream: linuxserver/bookstack:25.12.9
+    image: docker.1ms.run/linuxserver/bookstack:25.12.9
     depends_on:
       - db
     environment:
